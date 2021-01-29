@@ -1,0 +1,50 @@
+'#Language "WWB-COM"
+Option Explicit
+
+Dim WithEvents t As Transaction
+
+Sub Main
+	Dim doc As Document
+
+	Set doc = ActiveDocument
+	Set t = doc.NewTransaction("Delete Relationships")
+	t.Start
+End Sub
+
+Sub t_Execute(ByVal pDocument As Document)
+	Dim doc As Document
+	Dim selectedtopics As Selection
+	Dim aTopic As Topic
+	Dim aRel As Relationship
+
+	Set doc = pDocument
+	Set selectedtopics = doc.Selection
+
+	If selectedtopics.HasRelationship Or selectedtopics.HasBackgroundObject Or selectedtopics.HasBoundary Or selectedtopics.HasCentralTopic Or selectedtopics.HasDataModelObjectsSet Then
+		MsgBox("Nur Topics auswählen")
+		Exit Sub
+	End If
+
+	If Not selectedtopics.HasTopic Then
+		MsgBox("Bitte mindestens ein Topic auswählen.")
+		Exit Sub
+	End If
+
+	For Each aTopic In selectedtopics
+		Dim a As String
+		Dim t1, t2 As Topic
+
+		For Each aRel In aTopic.AllRelationships
+			If IsObject(aRel.ConnectedObject1) And IsObject(aRel.ConnectedObject2) Then
+				If aRel.ConnectedObject1.Type=mmDocumentObjectTypeTopic And aRel.ConnectedObject2.Type=mmDocumentObjectTypeTopic Then
+                	Set t1 = aRel.ConnectedObject1
+                	Set t2 = aRel.ConnectedObject2
+
+                	If t1.Text = t2.Text Then
+	                    aRel.Delete
+                	End If
+		    	End If
+			End If
+		Next
+	Next
+End Sub

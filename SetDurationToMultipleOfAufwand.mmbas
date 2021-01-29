@@ -1,0 +1,29 @@
+'#Language "WWB-COM"
+
+Option Explicit
+
+Sub Main
+Dim doc As Document
+Dim selectedtopics As Selection
+Dim aTopic As Topic
+
+Set doc = ActiveDocument
+
+Set selectedtopics = doc.Selection
+
+If Not selectedtopics.HasTopic Then
+	MsgBox("Bitte mindestens ein Topic auswählen.")
+	Exit Sub
+End If
+
+For Each aTopic In selectedtopics
+	Dim d,e As Integer
+	Dim divi As String
+
+	d=aTopic.Task.GetDuration(mmDurationUnitHour)
+	e=aTopic.Task.GetEffort(mmDurationUnitHour)
+	divi=InputBox("Divisor eingeben für Duration=Aufwand/<Divisor> 0,75 macht aus einer ganzen eine Dreiviertel-Kraft: 10 Stunden Aufwand=13 Stunden Dauer.","Dauer anpassen", "0,75")
+	aTopic.Task.SetDuration(mmDurationUnitHour, e/CDbl(divi))
+
+Next
+End Sub

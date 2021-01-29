@@ -1,0 +1,33 @@
+'#Language "WWB-COM"
+
+Option Explicit
+
+Sub Main
+
+Dim doc As Document
+Dim selectedtopics As Selection
+Dim aTopic As Topic
+Dim lastTopic As Topic
+
+Set doc = ActiveDocument
+Set selectedtopics = doc.Selection
+
+If Not selectedtopics.HasTopic Then
+	MsgBox("Bitte mindestens zwei Topics auswählen.")
+	Exit Sub
+End If
+
+If selectedtopics.HasRelationship Or selectedtopics.HasBackgroundObject Or selectedtopics.HasBoundary Or selectedtopics.HasCentralTopic Or selectedtopics.HasDataModelObjectsSet Then
+	MsgBox("Nur Topics auswählen")
+	Exit Sub
+End If
+
+For Each aTopic In selectedtopics
+	If lastTopic Is Nothing Then
+		Set lastTopic = aTopic
+	Else
+		lastTopic.SetDependency(aTopic, MmDependencyFinishToStart)
+	End If
+Next
+
+End Sub
