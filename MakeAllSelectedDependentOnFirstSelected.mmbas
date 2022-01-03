@@ -8,17 +8,18 @@ Dim doc As Document
 Dim selectedtopics As Selection
 Dim aTopic As Topic
 Dim lastTopic As Topic
+Dim aRel As Relationship
 
 Set doc = ActiveDocument
 Set selectedtopics = doc.Selection
 
 If Not selectedtopics.HasTopic Then
-	MsgBox("Bitte mindestens zwei Topics ausw‰hlen.")
+	MsgBox("Bitte mindestens zwei Topics ausw√§hlen.")
 	Exit Sub
 End If
 
 If selectedtopics.HasRelationship Or selectedtopics.HasBackgroundObject Or selectedtopics.HasBoundary Or selectedtopics.HasCentralTopic Or selectedtopics.HasDataModelObjectsSet Then
-	MsgBox("Nur Topics ausw‰hlen")
+	MsgBox("Nur Topics ausw√§hlen")
 	Exit Sub
 End If
 
@@ -26,7 +27,8 @@ For Each aTopic In selectedtopics
 	If lastTopic Is Nothing Then
 		Set lastTopic = aTopic
 	Else
-		lastTopic.SetDependency(aTopic, MmDependencyFinishToStart)
+		Set aRel = lastTopic.Relationships.AddToTopic(aTopic)
+		aRel.Attributes("http://schemas.iaresearch.com/PTMAddin").SetAttributeValue("DependencyType", "FinishToStart")
 	End If
 Next
 
